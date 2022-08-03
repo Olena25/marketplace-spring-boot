@@ -1,6 +1,6 @@
 package com.intellias.marketplace.service;
 
-import com.intellias.marketplace.db.ProductDatabase;
+import com.intellias.marketplace.db.ProductRepository;
 import com.intellias.marketplace.dto.ProductRequest;
 import com.intellias.marketplace.dto.ProductResponse;
 import com.intellias.marketplace.exception.ProductNotFoundException;
@@ -11,30 +11,33 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 @AllArgsConstructor
 @Slf4j
 public class ProductService {
-    private ProductDatabase productDatabase;
+
+    private ProductRepository productRepository;
+
     private ProductMapper productMapper;
 
     public List<ProductResponse> findAll() {
         log.info("Searching for all products");
-        List<Product> products = productDatabase.findAll();
+        List<Product> products = productRepository.findAll();
 
         return productMapper.mapToProductResponses(products);
     }
 
     public Product findById(String productId) {
-        Product product = productDatabase.findProductById(productId);
+        Optional<Product> product = productRepository.findById(UUID.fromString(productId));
 
-        if (product == null) {
+        if (product.isEmpty()) {
             throw new ProductNotFoundException("Product with id " + productId + " not found");
         }
 
-        return product;
+        return product.get();
     }
 
     public void add(ProductRequest productRequest) {
@@ -48,12 +51,12 @@ public class ProductService {
         product.setPrice(productRequest.getPrice());
         product.setId(UUID.randomUUID());
 
-        productDatabase.save(product);
+        productRepository.save(product);
     }
 
     public void deleteProduct(String productId) {
         log.info("Trying to delete product with id {}", productId);
         Product product = findById(productId);
-        productDatabase.delete(product);
+        productRepository.delete(product);
     }
 }
