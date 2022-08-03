@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+/hs_err_pid2348.log
+/hs_err_pid12104.log
+/mvnw
+/mvnw.cmd
