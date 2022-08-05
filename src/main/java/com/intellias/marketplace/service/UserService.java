@@ -1,8 +1,12 @@
 package com.intellias.marketplace.service;
 
+import com.intellias.marketplace.db.DeliveryRepository;
 import com.intellias.marketplace.db.UserRepository;
+import com.intellias.marketplace.dto.DeliveryResponse;
 import com.intellias.marketplace.dto.UserResponse;
 import com.intellias.marketplace.exception.NotEnoughMoneyException;
+import com.intellias.marketplace.mapper.DeliveryMapper;
+import com.intellias.marketplace.model.Delivery;
 import com.intellias.marketplace.model.Product;
 import com.intellias.marketplace.dto.UserRequest;
 import com.intellias.marketplace.exception.UserNotFoundException;
@@ -13,10 +17,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -26,11 +27,18 @@ public class UserService {
     private ProductService productService;
     private UserMapper userMapper;
     private UserRepository userRepository;
+    private DeliveryRepository deliveryRepository;
+    private DeliveryMapper deliveryMapper;
 
     public List<UserResponse> findAll() {
         log.info("Searching for all users");
         List<User> users = userRepository.findAll();
         return userMapper.mapToUserResponses(users);
+    }
+    public List<DeliveryResponse> findDeliveries(String userId){
+        User user = findById(userId);
+        List<Delivery> deliveries = user.getDeliveries();
+        return deliveryMapper.mapToDeliveryResponse(deliveries);
     }
 
     public void add(UserRequest userDto) {
@@ -44,7 +52,7 @@ public class UserService {
         user.setFirstName(userDto.getFirstName());
         user.setLastName(userDto.getLastName());
         user.setAmountOfMoney(userDto.getAmountOfMoney());
-        user.setProducts(new ArrayList<>());
+
         user.setId(UUID.randomUUID());
 
         userRepository.save(user);

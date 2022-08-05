@@ -17,6 +17,13 @@ public class ApplicationExceptionHandler {
         return new Error(e.getMessage());
     }
 
+    @ExceptionHandler(ProductIsNotBoughtException.class)
+    @ResponseBody
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Error handleProductIsNotBoughtException(ProductIsNotBoughtException e){
+        return new Error(e.getMessage());
+    }
+
     @ExceptionHandler(NotEnoughMoneyException.class)
     @ResponseBody
     @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)

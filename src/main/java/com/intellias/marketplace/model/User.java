@@ -3,10 +3,7 @@ package com.intellias.marketplace.model;
 import lombok.Data;
 import org.hibernate.annotations.Type;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,4 +20,6 @@ public class User {
     private long amountOfMoney;
     @ManyToMany
     private List<Product> products;
+    @OneToMany(mappedBy = "user")
+    private List<Delivery> deliveries;
 }
